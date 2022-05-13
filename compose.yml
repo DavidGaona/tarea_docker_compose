@@ -1,0 +1,43 @@
+services:
+  api:
+    build: .
+    container_name: api_flask
+    networks:
+      - network1
+      - network2
+    volumes:
+      - ./tarea:/code  
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:12  
+    container_name: base_de_datos
+    volumes:
+      - ./db-data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    networks:
+      - network1
+
+  comandos:
+    image: alpine:3.14
+    container_name: frontend
+    networks:
+      - network2
+    entrypoint: /bin/sh
+    stdin_open: true
+
+networks:
+  network1: {}
+  network2: {}
+
+volumes:
+  db-data:
+    driver: local
+
+
+
